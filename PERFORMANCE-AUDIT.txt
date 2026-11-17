@@ -1,0 +1,7 @@
+bundle_id_ok=true
+persistent_store_ok=true
+sandbox_ok=true
+camera_ok=true
+microphone_ok=true
+dead_strip_ok=true
+strip_ok=true

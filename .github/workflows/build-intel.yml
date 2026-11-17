@@ -1,0 +1,50 @@
+name: Build Teams Lite Native v3.10.3 Files Universal2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          uname -m
+          swift --version
+          xcodebuild -version
+
+      - name: Build Universal2
+        run: |
+          chmod +x build-intel.sh
+          ./build-intel.sh
+
+      - name: Verify app
+        run: |
+          test -d "dist/Teams Lite.app"
+          test -x "dist/Teams Lite.app/Contents/MacOS/TeamsLite"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "dist/Teams Lite.app/Contents/Info.plist")" = "local.teamslite.native"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "dist/Teams Lite.app/Contents/Info.plist")" = "TeamsLite"
+          ARCHS="$(lipo -archs "dist/Teams Lite.app/Contents/MacOS/TeamsLite")"
+          echo "$ARCHS"
+          echo "$ARCHS" | grep -q x86_64
+          echo "$ARCHS" | grep -q arm64
+          codesign --verify --deep --strict "dist/Teams Lite.app"
+          codesign -d --entitlements :- "dist/Teams Lite.app" 2>&1 | grep -q "com.apple.security.app-sandbox"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Teams-Lite-Native-v3.10.3-Files-Universal2
+          path: |
+            dist/Teams-Lite-Native-v3.10.3-Files-Universal2.zip
+            dist/Teams-Lite-Native-v3.10.3-Files-Universal2.zip.sha256
+          if-no-files-found: error

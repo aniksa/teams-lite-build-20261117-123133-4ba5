@@ -1,0 +1,9 @@
+134:        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Safari"),
+548:    private func openExternal(_ url: URL) {
+549:        NSLog("[TL] openExternal host=\(url.host ?? "-")")
+554:        task.arguments = ["-b", "com.apple.Safari", url.absoluteString]
+617:                openExternal(url)
+631:                openExternal(url)
+646:            openExternal(url)
+685:            openExternal(url)
+695:            openExternal(url)
